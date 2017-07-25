@@ -18,7 +18,6 @@ import com.massivecraft.massivecore.mixin.MixinTitle;
 import com.massivecraft.massivecore.ps.PS;
 import com.massivecraft.massivecore.ps.PSFormatHumanSpace;
 import com.massivecraft.massivecore.store.SenderEntity;
-import com.massivecraft.massivecore.store.inactive.Inactive;
 import com.massivecraft.massivecore.util.IdUtil;
 import com.massivecraft.massivecore.util.MUtil;
 import com.massivecraft.massivecore.util.Txt;
@@ -34,7 +33,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class MPlayer extends SenderEntity<MPlayer> implements FactionsParticipator, Inactive
+public class MPlayer extends SenderEntity<MPlayer> implements FactionsParticipator
 {
 	// -------------------------------------------- //
 	// META
@@ -105,6 +104,17 @@ public class MPlayer extends SenderEntity<MPlayer> implements FactionsParticipat
 	public void preDetach(String id)
 	{
 		FactionsIndex.get().update(this);
+	}
+	
+	@Override
+	public void preClean()
+	{
+		if (this.getRole() == Rel.LEADER)
+		{
+			this.getFaction().promoteNewLeader();
+		}
+		
+		this.leave();
 	}
 
 	// -------------------------------------------- //
